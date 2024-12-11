@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Button, TextField, Grid, Typography, Checkbox, Radio, FormControlLabel, RadioGroup, Box, MenuItem } from '@mui/material'; // Importa o botão do Material-UI
+import { Button, TextField, Grid, Typography, Checkbox, Radio, FormControlLabel, RadioGroup, Box, MenuItem, GlobalStyles } from '@mui/material'; // Importa o botão do Material-UI
 import 'react-phone-number-input/style.css'
 
 
@@ -18,6 +18,7 @@ const Formulario = () => {
     const [logradouro, setLogradouro] = useState('');
     const [bairro, setBairro] = useState('');
     const [localidade, setLocalidade] = useState('');
+    const [complemento, setComplemento] = useState ('');
     const [uf, setUf] = useState('');
     const [ibge, setIbge] = useState('');
     //sera um valor booleano, ou null caso ainda nao tenha sido validado
@@ -238,7 +239,6 @@ const Formulario = () => {
 
     // Criação do objeto de dados a ser enviado
     const [formData, setFormData] = useState({
-        id: Date.now(), // gera um codigo com base em tempo real
         tipoPessoa,
         contribuinte,
         documento,
@@ -264,7 +264,11 @@ const Formulario = () => {
     //função para envio do formulário
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+        // Verifica se todos os campos obrigatórios estão preenchidos
+        if (!nome || !documento || !cep || !email) {
+            alert("Por favor, preencha todos os campos obrigatórios!");
+            return;
+        }
         console.log("Form Data:", formData); // Verifica os dados no console (antes de enviar)
         localStorage.setItem('formData', JSON.stringify(formData)); // Salva no localStorage
     };
@@ -282,14 +286,24 @@ const Formulario = () => {
     }, []); // O array vazio faz isso ocorrer apenas uma vez, na montagem do componente.
 
     return (
+        <>
+        <GlobalStyles
+          styles={{
+            body: {
+              margin: '0', // Remove a margem do body
+              padding: '0', // Remove o padding do body (se houver)
+            },
+          }}
+        />
+
         <Box sx={{
             maxWidth: '1000px', //largura
             width: '100%',//responsividade
             margin: '30px auto', //centraliza
             padding: '35px', //espacamento interno
-            backgroundColor: '#D3D3D3',
-            borderRadius: '8px',// bordas arredondadas
-            boxShadow: '0px 4px 10px rgba(0,0,0,0,1)', //sobra leve
+            backgroundColor: '#e0e4e7',
+            border: '1px solid #2196F3',
+            borderRadius: '16px',// bordas arredondadas            
         }}
         >
             <form onSubmit={handleSubmit}>
@@ -298,9 +312,11 @@ const Formulario = () => {
                         <Typography variant='h4'
                             gutterBottom
                             sx={{
-                                fontFamily: 'Roboto, sans-serif',
-                                color: '#3283e2',
-                                fontWeight: 'bold',
+                                fontFamily: 'Montserrat, sans-serif',
+                                color: '#2196F3',
+                                fontWeight: '600',
+                                fontSize: '40px',
+                                lineHeight:'49px',
                                 textAlign: 'rigth', // Alinha o texto à esquerda
                                 marginBottom: '16px', // Dá um espaçamento entre o título e o conteúdo
 
@@ -314,6 +330,7 @@ const Formulario = () => {
                             variant="h6"
                             gutterBottom
                             sx={{
+                                fontFamily: 'Montserrat, sans-serif',
                                 color: '#696969',
                                 fontWeight: 'bold',
                                 textAlign: 'left', // Garante que o texto fique à esquerda
@@ -344,24 +361,10 @@ const Formulario = () => {
                             />
                         </RadioGroup>
                     </Grid>
-
-                    <Grid item xs={12}>
-                        <FormControlLabel //conferir se é contribuinte
-                            control={
-                                <Checkbox
-                                    checked={contribuinte === "sim"}
-                                    onChange={(e) =>
-                                        setContribuinte(e.target.checked ? "sim" : "não") //atualiza o estado de contribuinte
-                                    }
-                                />
-                            }
-                            label="É contribuinte?"
-                        />
-                    </Grid>
                 </Grid>
 
-                <Grid container spacing={2} justifyContent="center" sx={{ maxWidth: '1200px', margin: '0 auto' }}>
-                    <Grid item xs={12} sm={6}>
+                <Grid container spacing={2} sx={{ maxWidth: '1200px', margin: '0 auto' }}>
+                    <Grid item xs={8} sm={4}>
                         <TextField
                             label='CPF/CNPJ'
                             placeholder="Digite CPF ou CNPJ"  // O placeholder aparece dentro do campo
@@ -374,8 +377,8 @@ const Formulario = () => {
                             required
                         />
                     </Grid>
-
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={8} sm={4} container spacing={2} alignItems="center">
+                    <Grid item xs={10} sm={11}>
                         <TextField
                             label="Inscrição Estadual"
                             type='text'
@@ -387,7 +390,22 @@ const Formulario = () => {
                             fullWidth
                         />
                     </Grid>
+                    <Grid item xs={2} sm={1}>
+                        <FormControlLabel //conferir se é contribuinte
+                            control={
+                                <Checkbox
+                                    checked={contribuinte === "sim"}
+                                    onChange={(e) =>
+                                        setContribuinte(e.target.checked ? "sim" : "não") //atualiza o estado de contribuinte
+                                    }
+                                />
+                            }
+                            label="Contribuinte?"
+                        />
+                    </Grid>
                 </Grid>
+                </Grid>
+                
 
                 {/* Exibe mensagem de erro caso CPF/CNPJ seja inválido */}
                 {documento.length === 14 && cnpjInfo && (
@@ -447,6 +465,7 @@ const Formulario = () => {
                             variant="h6"
                             gutterBottom
                             sx={{
+                                fontFamily: 'Montserrat, sans-serif',
                                 color: '#696969',
                                 fontWeight: 'bold',
                                 textAlign: 'left', // Garante que o texto fique à esquerda
@@ -454,10 +473,11 @@ const Formulario = () => {
                         >
                             Endereço
                         </Typography>
+                        </Grid>
 
-                    </Grid>
                     {/* Campo para CEP */}
-                    <Grid item xs={12} sm={6}>
+                    <Grid container spacing={1} sx={{ maxWidth: '1200px', margin: '0 auto' }}>
+                    <Grid item xs={6} sm={3}>
                         <TextField
                             label="Cep"
                             type="text"
@@ -475,9 +495,9 @@ const Formulario = () => {
                     </Grid>
 
                     {/* Campo para Endereço */}
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={18} sm={9}>
                         <TextField
-                            label="Endereço:"
+                            label="Endereço"
                             type="text"
                             name="logradouro"
                             id="logradouro"
@@ -490,9 +510,9 @@ const Formulario = () => {
 
 
                     {/* Campo para Número */}
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={4} sm={2}>
                         <TextField
-                            label="Número:"
+                            label="Número"
                             type="text"
                             name="numero"
                             id="numero"
@@ -506,7 +526,7 @@ const Formulario = () => {
                     {/*campo para bairro*/}
                     <Grid item xs={12} sm={6}>
                         <TextField
-                            label="Bairro:"
+                            label="Bairro"
                             type="text"
                             name="bairro"
                             id="bairro"
@@ -518,10 +538,24 @@ const Formulario = () => {
                         />
                     </Grid>
 
-                    {/*campo para cidade*/}
-                    <Grid item xs={12} sm={6}>
+                    {/*campo para complemento*/}
+                    <Grid item xs={8} sm={4}>
                         <TextField
-                            label="Cidade:"
+                        label="Complemento"
+                        type="text"
+                        name="complemento"
+                        id="complemento"
+                        value={complemento}
+                        onChange={(e) => setComplemento(e.target.value)}
+                        placeholder='Complemento'
+                        fullWidth
+                        />
+                    </Grid>
+
+                    {/*campo para cidade*/}
+                    <Grid item xs={18} sm={9}>
+                        <TextField
+                            label="Cidade"
                             type="text"
                             name="localidade"
                             id="localidade"
@@ -532,11 +566,10 @@ const Formulario = () => {
                             required
                         />
                     </Grid>
-
                     {/* UF */}
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={6} sm={3}>
                         <TextField
-                            label="UF:"
+                            label="UF"
                             type="text"
                             name="uf"
                             id="uf"
@@ -547,6 +580,7 @@ const Formulario = () => {
                         />
                     </Grid>
                 </Grid>
+                </Grid>
 
                 {/* Contato do Cliente */}
                 <Grid container spacing={2} justifyContent="center" sx={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -555,6 +589,7 @@ const Formulario = () => {
                             variant="h6"
                             gutterBottom
                             sx={{
+                                fontFamily: 'Montserrat, sans-serif',
                                 color: '#696969',
                                 fontWeight: 'bold',
                                 textAlign: 'left', // Garante que o texto fique à esquerda
@@ -567,7 +602,7 @@ const Formulario = () => {
                     <Grid container spacing={2} textAlign={'left'} sx={{ maxWidth: '1200px', margin: '0 auto' }}>
                         <Grid item xs={12} sm={4}>
                             <TextField //container organiza os elementos na linha, xs para tela menores e sm para telas maiores
-                                label="Telefone:"
+                                label="Telefone"
                                 type="text"
                                 name="telefone"
                                 id="telefone"
@@ -583,7 +618,7 @@ const Formulario = () => {
                         {/*Campo para Celular*/}
                         <Grid item xs={12} sm={4}>
                             <TextField
-                                label="Celular:"
+                                label="Celular"
                                 type='text'
                                 name='celular'
                                 id='celular'
@@ -598,7 +633,7 @@ const Formulario = () => {
                         {/*responsavel pelo telefone de contato*/}
                         <Grid item xs={12} sm={4}>
                             <TextField
-                                label="Responsável:"
+                                label="Responsável"
                                 type='text'
                                 name='responsavel'
                                 id='responsavel'
@@ -651,6 +686,7 @@ const Formulario = () => {
                             variant="h6"
                             gutterBottom
                             sx={{
+                                fontFamily: 'Montserrat, sans-serif',
                                 color: '#696969',
                                 fontWeight: 'bold',
                                 textAlign: 'left', // Garante que o texto fique à esquerda
@@ -667,7 +703,7 @@ const Formulario = () => {
                             type="text"
                             name='observacoes'
                             id="observacoes"
-                            label="Observações:"
+                            label="Observações"
                             multiline
                             rows={4}
                             fullWidth
@@ -682,14 +718,13 @@ const Formulario = () => {
                 {/* Botão de envio */}
                 {/* Adiciona o botão do Material-UI */}
                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-                    <Button variant="contained" 
-                    color="primary" 
-                    type="submit">
+                    <Button variant="contained" color="primary" type="submit">
                         Enviar
                     </Button>
                 </Box>
             </form>
         </Box >
+        </>
     );
 };
 

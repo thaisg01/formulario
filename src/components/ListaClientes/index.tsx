@@ -17,7 +17,7 @@ const ListaClientes = () => {
             <Typography variant='h4'
                 gutterBottom
                 sx={{
-                    fontFamily: 'Roboto, sans-serif',
+                    fontFamily: 'Montserrat, sans-serif',
                     color: '#3283e2',
                     fontWeight: 'bold',
                     textAlign: 'rigth', // Alinha o texto à esquerda
