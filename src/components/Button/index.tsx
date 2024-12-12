@@ -19,6 +19,7 @@ const Botao = ({ texto, onClick }: { texto: string; onClick: () => void }) => {
             >
                 Lista de Clientes
             </Button>
+            <Button variant="contained" color="primary" type="submit">Enviar</Button>
         </header>
     );
 };

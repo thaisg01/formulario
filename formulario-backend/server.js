@@ -1,38 +1,23 @@
 const express = require('express');
-const path = require('path');
+const cors = require('cors');  // Importando o CORS
+const axios = require('axios');
+
 const app = express();
-const cors = require('cors');
 
-// Definir a porta para o servidor
-const PORT = process.env.PORT || 5000;
-
-// Habilitar CORS para o servidor
+// Habilitando o CORS para permitir requisições do front-end
 app.use(cors());
 
-// Servir as APIs da aplicação (back-end)
-app.get('/api/cnpj/:cnpj', (req, res) => {
-  // Simulando resposta da API
-  console.log('chegou')
-  const cnpjData = {
-    cnpj: req.params.cnpj,
-    nome: 'Exemplo de Empresa',
-    situacao: 'Ativa',
-    // ... outros dados
-  };
-  res.json(cnpjData);
+app.get('/api/cnpj/:cnpj', async (req, res) => {
+  const cnpj = req.params.cnpj;
+  try {
+    const response = await axios.get(`https://receitaws.com.br/v1/cnpj/${cnpj}`);
+    res.json(response.data);  // Retorna os dados do CNPJ
+  } catch (error) {
+    console.error('Erro ao buscar CNPJ:', error);
+    res.status(500).json({ error: 'Erro ao buscar CNPJ' });
+  }
 });
 
-// Servir o front-end (React) após a build
-app.use(express.static(path.join(__dirname, 'build')));
-
-// Roteamento para o front-end (React)
-app.get('*', (req, res) => {
-  // res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
-
-
-
-// Iniciar o servidor
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+app.listen(5000, () => {
+  console.log('Servidor rodando em http://localhost:5000');
 });

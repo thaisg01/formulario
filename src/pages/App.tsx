@@ -47,7 +47,7 @@ const App = () => {
           sx={{
             flexGrow: 1,
             p: 4, // Padding interno
-            backgroundColor: '#f9f9f9', // Fundo claro para contraste
+            backgroundColor: '#fffff', // Fundo claro para contraste
             minHeight: '100vh', // Garante altura completa
           }}
         >
