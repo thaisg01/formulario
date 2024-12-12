@@ -41,7 +41,7 @@ export default function useListaClientes() {
   useEffect(() => {
     const dadosSalvos = localStorage.getItem("formData");
     if (dadosSalvos) {
-      const parsedData: Cliente[] = JSON.parse(dadosSalvos); // Certifique-se de que o JSON é do tipo Cliente[]
+      const parsedData: Cliente[] = JSON.parse(dadosSalvos); 
       setClientes(parsedData);
     }
   }, []);
